@@ -8,14 +8,14 @@ from statistics_data.percapita_regiones_date import get_percapita_by_year
 
 def generate_csv_main(cn):
     user_chile = get_user_chile(cn)
-    user_chile.to_csv("data_write/user_chile.csv", index=False, header=True, encoding='utf-8', sep="\t")
+    user_chile.to_csv("data_write/user_chile.csv", index=False, header=True, encoding='utf-8', sep=",")
     user_tweets_chile = get_user_tweets_chile(cn)
-    user_tweets_chile.to_csv("data_write/user_tweets_chile.csv", index=False, header=True, encoding='utf-8', sep="\t")
+    user_tweets_chile.to_csv("data_write/user_tweets_chile.csv", index=False, header=True, encoding='utf-8', sep=",")
 
 
 def csv_percapita_regiones_table(cn):
     percapita_regiones = get_percapita_regiones(cn)
-    percapita_regiones.to_csv("data_write/percapita_regiones.csv", index=False, header=False, encoding='utf-8', sep="\t")
+    percapita_regiones.to_csv("data_write/percapita_regiones.csv", index=False, header=False, encoding='utf-8', sep=",")
 
 
 def csv_percapita_regiones_date_by_year(cn):

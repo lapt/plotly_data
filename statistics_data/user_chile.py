@@ -4,7 +4,8 @@ from sqlalchemy import exc
 
 def get_user_chile(connection):
 
-    sql = "SELECT * FROM user_chile;"
+    sql = "SELECT user_procesado as 'Usuario Procesado', user_sin_procesar as 'Usuario sin procesar', " \
+          "user_total as 'Total de Usuarios' FROM percapita_db.user_chile;"
 
     try:
         data = pd.read_sql_query(sql, connection)
