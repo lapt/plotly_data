@@ -24,6 +24,8 @@ REGIONES = {
     '08': 'O’Higgins',
     '12': 'RM Santiago'
 }
+
+
 def generate_csv_main(cn):
     user_chile = get_user_chile(cn)
     user_chile.to_csv("data_write/user_chile.csv", index=False, header=True, encoding='utf-8', sep=",")
@@ -34,7 +36,8 @@ def generate_csv_main(cn):
 
 def csv_percapita_regiones_table(cn):
     percapita_regiones = get_percapita_regiones(cn)
-    percapita_regiones.to_csv("data_write/percapita_regiones.csv", index=False, header=False, encoding='utf-8', sep=",")
+    percapita_regiones['region_code'] = percapita_regiones['region_code'].apply(lambda x: REGIONES[x])
+    percapita_regiones.to_csv("data_write/percapita_regiones.csv", index=False, header=True, encoding='utf-8', sep=",")
 
 
 def csv_percapita_regiones_date_by_year(cn):
@@ -55,7 +58,7 @@ def csv_chart_area_year(cn):
 
 def main():
     cn = get_connection_mysql()
-    generate_csv_main(cn)
+    csv_percapita_regiones_table(cn)
 
 if __name__ == '__main__':
     main()
