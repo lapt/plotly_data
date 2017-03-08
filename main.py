@@ -5,6 +5,9 @@ from statistics_data.user_chile import get_user_tweets_chile
 from statistics_data.percapita_regiones import get_percapita_regiones
 from statistics_data.percapita_regiones_date import get_percapita_regiones_date
 from statistics_data.percapita_regiones_date import get_percapita_by_year
+import pandas as pd
+import numpy as np
+
 
 REGIONES = {
     '00': 'Chile*',
@@ -41,7 +44,31 @@ def csv_percapita_regiones_table(cn):
 
 
 def csv_percapita_regiones_date_by_year(cn):
-    pass
+    data = get_percapita_regiones_date(cn)
+    data['region_code'] = data['region_code'].apply(lambda x: REGIONES[x])
+
+    for year in range(2015, 2016):
+        df_date = data[data['percapita_year'] == year]
+        series_titles = df_date['list_month_year'].unique()
+        for title in series_titles:
+            try:
+                series_date = df_date[df_date['list_month_year'] == title]
+                series_date = series_date.set_index(series_date['region_code'])
+                df_year_p = pd.concat([df_year_p, series_date['percapita_positive']], axis=1)
+                df_year_n = pd.concat([df_year_n, series_date['percapita_negative']], axis=1)
+            except NameError:
+                df_year_p = pd.DataFrame(index=series_date.index)
+                df_year_n = pd.DataFrame(index=series_date.index)
+                df_year_p = pd.concat([df_year_p, series_date['region_code'], series_date['percapita_positive']], axis=1)
+                df_year_n = pd.concat([df_year_n, series_date['region_code'], series_date['percapita_negative']], axis=1)
+
+        df_year_p.columns = np.concatenate((np.array(['region_code']), series_titles))
+        df_year_n.columns = np.concatenate((np.array(['region_code']), series_titles))
+        df_year_p.to_csv("data_write/percapita_regiones_p_%d.csv" % year, index=False, header=True, encoding='utf-8',
+                         sep=",")
+        df_year_n.to_csv("data_write/percapita_regiones_n_%d.csv" % year, index=False, header=True, encoding='utf-8',
+                         sep=",")
+        pass
 
 
 def csv_percentage_positive_sentiment_date(cn):
@@ -58,7 +85,7 @@ def csv_chart_area_year(cn):
 
 def main():
     cn = get_connection_mysql()
-    csv_percapita_regiones_table(cn)
+    csv_percapita_regiones_date_by_year(cn)
 
 if __name__ == '__main__':
     main()
