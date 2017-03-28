@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from db_mysql_connector.Connection_lpari_db import get_connection_mysql
 from statistics_data.user_chile import get_user_chile
-from statistics_data.user_chile import get_user_tweets_chile
+from statistics_data.user_chile import get_users_by_region
+from statistics_data.user_chile import get_tweets_by_region
 from statistics_data.percapita_regiones import get_percapita_regiones
 from statistics_data.percapita_regiones_date import get_percapita_regiones_date
 from statistics_data.percapita_regiones_date import get_percapita_by_year
@@ -32,9 +33,14 @@ REGIONES = {
 def generate_csv_main(cn):
     user_chile = get_user_chile(cn)
     user_chile.to_csv("data_write/user_chile.csv", index=False, header=True, encoding='utf-8', sep=",")
-    user_tweets_chile = get_user_tweets_chile(cn)
-    user_tweets_chile['region'] = user_tweets_chile['region'].apply(lambda x: REGIONES[x])
-    user_tweets_chile.to_csv("data_write/user_tweets_chile.csv", index=False, header=True, encoding='utf-8', sep=",")
+
+    user_by_region = get_users_by_region(cn)
+    user_by_region['region'] = user_by_region['region'].apply(lambda x: REGIONES[x])
+    user_by_region.to_csv("data_write/user_by_region.csv", index=False, header=True, encoding='utf-8', sep=",")
+
+    tweet_by_region = get_tweets_by_region(cn)
+    tweet_by_region['region'] = tweet_by_region['region'].apply(lambda x: REGIONES[x])
+    tweet_by_region.to_csv("data_write/tweet_by_region.csv", index=False, header=True, encoding='utf-8', sep=",")
 
 
 def csv_percapita_regiones_table(cn):
@@ -87,5 +93,10 @@ def main():
     cn = get_connection_mysql()
     csv_percapita_regiones_date_by_year(cn)
 
+
+def prueba():
+    cn = get_connection_mysql()
+    generate_csv_main(cn)
+
 if __name__ == '__main__':
-    main()
+    prueba()
